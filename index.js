@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion } = require("mongodb");
+require("dotenv").config();
 
 const host = "localhost";
 const port = process.env.PORT || 5000;
@@ -19,15 +20,22 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
+async function run() {
+  try {
+    await client.connect();
+    const productCollection = client.db("emaJohn").collection("product");
 
-async function run(){
-  try{
-
-  }finally{
-
+    // GET product : get all products
+    app.get("/product", async (req, res) => {
+      const query = {};
+      const cursor = productCollection.find(query);
+      const products = await cursor.toArray();
+      res.send(products);
+    });
+  } finally {
   }
 }
-run().catch(console.dir)
+run().catch(console.dir);
 
 app.get("/", (req, res) => {
   res.send("John is running and waiting for Ema");
